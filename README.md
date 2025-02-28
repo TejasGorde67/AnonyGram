@@ -1,2 +1,2 @@
 # AnonyGram
-Repository for AnonyGram 
+Repository for AnonyGram - An annonymous messaging platform
