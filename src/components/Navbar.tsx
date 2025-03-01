@@ -22,7 +22,7 @@ function Navbar() {
         >
           <span>
             <Image
-              src={"public/letter-g.png"}
+              src={"/letter-a.png"}
               alt="logo"
               height={30}
               width={30}
