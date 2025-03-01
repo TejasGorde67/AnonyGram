@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AuthProvider from "../context/AuthProvider";
 import { Toaster } from "sonner";
 import DarkModeProvider from "@/context/DarkModeContext";
-import AuthProvider from "../context/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "AnonyGram",
-  description: "Real feedback from real people.",
+  title: "GhostGram",
+  description: "Real Message from real people.",
 };
 
 interface RootLayoutProps {
