@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import DarkModeProvider from "@/context/DarkModeContext";
 
 export const metadata: Metadata = {
-  title: "GhostGram",
+  title: "AnonyGram",
   description: "Real Message from real people.",
 };
 
