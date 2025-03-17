@@ -27,11 +27,12 @@ export default function Footer() {
         <div className="text-sm space-x-1">
           <span>Developed by</span>
           <Link
-            href={"https://www.linkedin.com/in/tejas-gorde-63b464256/"}
+            href={""}
             className="underline text-orange-500 dark:text-orange-300"
           >
             Tejas
           </Link>
+          <span>💜</span>
         </div>
         <div className="flex gap-2">
           <Link href={"https://github.com/TejasGorde67"} target="_blank">

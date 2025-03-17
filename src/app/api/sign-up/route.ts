@@ -72,15 +72,19 @@ export async function POST(request: Request) {
       }
     }
 
+    // Around line 75
     const result = await sendVerificationEmail(email, username, verifyCode);
-
+    
     if (!result.success) {
+      console.error("Email sending failed:", result.message);
+      
+      // Still create the user but inform about email issue
       return Response.json(
         {
-          success: false,
-          message: 'Error while sending the verification code',
+          success: true,
+          message: 'Account created, but we could not send the verification email. Please use the "Send Verification Code" option to get your code.',
         },
-        { status: 500 }
+        { status: 201 }
       );
     }
 
