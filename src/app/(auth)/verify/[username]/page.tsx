@@ -20,6 +20,7 @@ import { bricolage_grotesque } from "@/lib/fonts";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function VerifyAccount() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -92,6 +93,15 @@ export default function VerifyAccount() {
             </Button>
           </form>
         </Form>
+        
+        <div className="text-center mt-4">
+          <p>
+            Didn't receive a code or code expired?{" "}
+            <Link href="/resend-verification" className="text-blue-400 hover:text-blue-500">
+              Resend verification code
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
