@@ -25,7 +25,10 @@ export async function POST(request: Request) {
     }
 
     const existingUserByEmail = await UserModel.findOne({ email });
+    // When generating the verification code
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Set expiration to 30 minutes instead of 1 hour
+    const verifyCodeExpiry = new Date(Date.now() + 30 * 60 * 1000);
 
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
