@@ -1,7 +1,7 @@
-import dbConnect from '@/lib/dbConnect';
-import UserModel from '@/model/User';
-import bcrypt from 'bcryptjs';
-import { sendVerificationEmail } from '@/helpers/sendVerificationEmail';
+import dbConnect from "@/lib/dbConnect";
+import UserModel from "@/model/User";
+import bcrypt from "bcryptjs";
+import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
 export async function POST(request: Request) {
   await dbConnect();
@@ -18,24 +18,21 @@ export async function POST(request: Request) {
       return Response.json(
         {
           success: false,
-          message: 'Username is already taken',
+          message: "Username is already taken",
         },
         { status: 400 }
       );
     }
 
     const existingUserByEmail = await UserModel.findOne({ email });
-    // When generating the verification code
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-    // Set expiration to 30 minutes instead of 1 hour
-    const verifyCodeExpiry = new Date(Date.now() + 30 * 60 * 1000);
 
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
         return Response.json(
           {
             success: false,
-            message: 'User already exists with this email',
+            message: "User already exists with this email",
           },
           { status: 400 }
         );
@@ -75,42 +72,33 @@ export async function POST(request: Request) {
       }
     }
 
-    // Around line 75
     const result = await sendVerificationEmail(email, username, verifyCode);
-    
+
     if (!result.success) {
-      console.error("Email sending failed:", result.message);
-      
-      // Still create the user but inform about email issue
       return Response.json(
         {
-          success: true,
-          message: 'Account created, but we could not send the verification email. Please use the "Send Verification Code" option to get your code.',
+          success: false,
+          message: "Error while sending the verification code",
         },
-        { status: 201 }
+        { status: 500 }
       );
     }
 
     return Response.json(
       {
         success: true,
-        message: 'User registered successfully. Please verify your account.',
+        message: "User registered successfully. Please verify your account.",
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.error("Error registering user:", error);
     return Response.json(
       {
         success: false,
-        message: 'Error registering user',
+        message: "Error registering user",
       },
       { status: 500 }
     );
   }
 }
-
-// When creating a new user, extend the verification code expiry time
-const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-// Increase expiration time from 1 hour to 24 hours
-const verifyCodeExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);

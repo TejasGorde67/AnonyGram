@@ -23,8 +23,10 @@ export async function GET(request: Request) {
       return Response.json(
         {
           success: false,
-          message: "Invalid query parameters",
-          errors: usernameErrors,
+          message:
+            usernameErrors?.length > 0
+              ? usernameErrors.join(", ")
+              : "Invalid query parameters",
         },
         { status: 400 }
       );
@@ -38,30 +40,30 @@ export async function GET(request: Request) {
     });
 
     if (existingVerifiedUser) {
-      return new Response(
-        JSON.stringify({
+      return Response.json(
+        {
           success: false,
           message: "Username is already taken",
-        }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
+        },
+        { status: 200 }
       );
     }
 
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         success: true,
         message: "Username is unique",
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error checking username:", error);
-    return new Response(
-      JSON.stringify({
+    return Response.json(
+      {
         success: false,
         message: "Error checking username",
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      },
+      { status: 500 }
     );
   }
 }

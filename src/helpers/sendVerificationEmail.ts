@@ -8,19 +8,13 @@ export async function sendVerificationEmail(
   verifyCode: string
 ): Promise<ApiResponse> {
   try {
-    // Check if sender email is configured
-    if (!process.env.SENDER_EMAIL) {
-      console.error("SENDER_EMAIL environment variable is not configured");
-      return { success: false, message: "Email configuration error" };
-    }
-
     const htmlContent = customerMailTemplate(username, verifyCode);
 
     await transporter.sendMail({
       from: process.env.SENDER_EMAIL,
       to: email,
       subject: "AnonyGram, Verification Code",
-      text: `Your verification code is: ${verifyCode}`,
+      text: "Your service is successfully booked, Happy!",
       html: htmlContent,
     });
 

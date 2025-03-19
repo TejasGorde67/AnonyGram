@@ -68,35 +68,22 @@ export default function SignUpForm() {
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setIsSubmitting(true);
     try {
-      // Add more detailed logging to help diagnose the issue
-      console.log("Submitting sign-up data:", {
-        ...data,
-        password: "[REDACTED]",
-      });
-
       const response = await axios.post<ApiResponse>("/api/sign-up", data);
       toast.success(response.data.message);
 
-      // Store username for verification page
-      router.replace(`/verify/${data.username}`);
+      router.replace(`/verify/${username}`);
+
+      setIsSubmitting(false);
     } catch (error) {
       console.error("Error during sign-up:", error);
 
       const axiosError = error as AxiosError<ApiResponse>;
 
-      // More detailed error logging
-      if (axiosError.response) {
-        console.error("Response status:", axiosError.response.status);
-        console.error("Response data:", axiosError.response.data);
-      }
-
-      // Fixed error message display
-      const errorMessage =
-        axiosError.response?.data.message ||
-        "There was a problem sending the verification code. Please try again.";
+      const errorMessage = axiosError.response?.data.message;
+      ("There was a problem with your sign-up. Please try again.");
 
       toast.error(errorMessage);
-    } finally {
+
       setIsSubmitting(false);
     }
   };

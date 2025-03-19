@@ -41,6 +41,14 @@ export async function GET() {
         },
       }
     );
+
+    // return Response.json(
+    //   {
+    //     success: true,
+    //     message: result.response.text(),
+    //   },
+    //   { status: 200 }
+    // );
   } catch (error) {
     return new Response(
       JSON.stringify({
