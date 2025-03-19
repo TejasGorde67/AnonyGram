@@ -8,26 +8,39 @@ export async function POST(request: Request) {
   try {
     const { username, email } = await request.json();
     
+    console.log("Resending verification code for:", { username, email });
+    
     // Find the user
     const user = await UserModel.findOne({ 
       username,
-      email,
-      isVerified: false 
+      email
     });
     
     if (!user) {
+      console.log("No account found with this username and email");
       return Response.json(
         { 
           success: false, 
-          message: "No unverified account found with this username and email" 
+          message: "No account found with this username and email" 
         },
         { status: 404 }
       );
     }
     
+    console.log("User found for resending code:", { 
+      id: user._id, 
+      username: user.username,
+      isVerified: user.isVerified
+    });
+    
     // Generate new verification code
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
     const verifyCodeExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    console.log("Generated new verification code:", {
+      newCode: verifyCode,
+      newExpiry: verifyCodeExpiry.toISOString()
+    });
     
     // Update user with new code
     user.verifyCode = verifyCode;
@@ -38,6 +51,7 @@ export async function POST(request: Request) {
     const emailResult = await sendVerificationEmail(email, username, verifyCode);
     
     if (!emailResult.success) {
+      console.error("Failed to send verification email:", emailResult);
       return Response.json(
         { 
           success: false, 
@@ -47,6 +61,7 @@ export async function POST(request: Request) {
       );
     }
     
+    console.log("Verification email sent successfully");
     return Response.json(
       { 
         success: true, 

@@ -109,3 +109,8 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// When creating a new user, extend the verification code expiry time
+const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+// Increase expiration time from 1 hour to 24 hours
+const verifyCodeExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
