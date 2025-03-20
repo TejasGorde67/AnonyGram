@@ -106,7 +106,8 @@ function UserDashboard() {
     return <div></div>;
   }
 
-  const { username } = session.user as User;
+  // Update the type casting to handle the session user structure
+  const { username } = session.user;
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
   const profileUrl = `${baseUrl}/u/${username}`;
