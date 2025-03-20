@@ -18,6 +18,6 @@ transporter.verify((error, success) => {
   if (error) {
     console.error("SMTP connection failed:", error);
   } else {
-    console.log("✅ SMTP connected successfully!");
+    console.log(`✅ SMTP connected successfully! Status: ${success}`);
   }
 });
