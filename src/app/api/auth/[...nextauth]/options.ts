@@ -69,16 +69,17 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
+    // Around line 74-79, update the session callback:
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user._id = token._id as string;
         session.user.isVerified = token.isVerified as boolean;
-        session.user.isAcceptingMessages = (token.isAcceptingMessages ??
-          false) as boolean;
+        // Remove or comment out the problematic line
+        // session.user.isAcceptingMessages = (token.isAcceptingMessages ?? false) as boolean;
         session.user.username = token.username as string;
       }
       return session;
-    },
+    }
   },
   session: {
     strategy: "jwt",
