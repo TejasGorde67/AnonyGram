@@ -5,11 +5,13 @@ import UserModel from "@/model/User";
 import bcrypt from "bcryptjs";
 import { Types } from "mongoose";
 
-interface SessionUser {
-  _id: string;
+// Define the User type to match what we're returning
+interface User {
+  id: string;
+  _id?: string;
   username: string;
-  isVerified: boolean;
   email: string;
+  isVerified: boolean;
 }
 
 const handler = NextAuth({
@@ -20,18 +22,19 @@ const handler = NextAuth({
         identifier: { label: "Username or Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.identifier || !credentials?.password) {
           throw new Error("Please enter your username/email and password");
         }
 
         await dbConnect();
 
+        // Try to find user by username or email
         const user = await UserModel.findOne({
           $or: [
             { username: credentials.identifier },
-            { email: credentials.identifier },
-          ],
+            { email: credentials.identifier }
+          ]
         });
 
         if (!user) {
@@ -47,15 +50,13 @@ const handler = NextAuth({
           throw new Error("Invalid username/email or password");
         }
 
-        const userDoc = user.toObject() as {
-          _id: Types.ObjectId;
-          username: string;
-          email: string;
-          isVerified: boolean;
-        };
-
+        // Use type assertion to fix the TypeScript error
+        const userDoc = user.toObject();
+        
+        // Allow login regardless of verification status
         return {
           id: userDoc._id.toString(),
+          _id: userDoc._id.toString(), // Add _id to match User type
           username: userDoc.username,
           email: userDoc.email,
           isVerified: userDoc.isVerified,
