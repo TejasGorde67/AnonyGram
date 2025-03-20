@@ -8,8 +8,6 @@ export async function POST(request: Request) {
   try {
     const { username, email } = await request.json();
 
-    console.log("Resending verification code for:", { username, email });
-
     // Find the user
     const user = await UserModel.findOne({
       username,
@@ -17,37 +15,22 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      console.log("No account found with this username and email");
       return Response.json(
-        {
-          success: false,
-          message: "No account found with this username and email",
-        },
+        { success: false, message: "User not found" },
         { status: 404 }
       );
     }
 
-    console.log("User found for resending code:", {
-      id: user._id,
-      username: user.username,
-      isVerified: user.isVerified,
-    });
-
-    // Generate new verification code
+    // Generate a new verification code
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const verifyCodeExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-    console.log("Generated new verification code:", {
-      newCode: verifyCode,
-      newExpiry: verifyCodeExpiry.toISOString(),
-    });
-
-    // Update user with new code
+    
+    // Set expiration to 24 hours from now
     user.verifyCode = verifyCode;
-    user.verifyCodeExpiry = verifyCodeExpiry;
+    user.verifyCodeExpiry = new Date(Date.now() + 24 * 3600000); // 24 hours
+    
     await user.save();
 
-    // Send email with new code
+    // Send the verification email
     const emailResult = await sendVerificationEmail(
       email,
       username,
@@ -55,28 +38,26 @@ export async function POST(request: Request) {
     );
 
     if (!emailResult.success) {
-      console.error("Failed to send verification email:", emailResult);
       return Response.json(
-        {
-          success: false,
-          message: "Failed to send verification email. Please try again.",
+        { 
+          success: false, 
+          message: "Failed to send verification email" 
         },
         { status: 500 }
       );
     }
 
-    console.log("Verification email sent successfully");
     return Response.json(
       {
         success: true,
-        message: "New verification code sent to your email",
+        message: "Verification code sent successfully. Please check your email.",
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error resending verification code:", error);
+    console.error("Error sending verification code:", error);
     return Response.json(
-      { success: false, message: "Error processing your request" },
+      { success: false, message: "Error sending verification code" },
       { status: 500 }
     );
   }
