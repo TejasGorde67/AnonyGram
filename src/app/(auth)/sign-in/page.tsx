@@ -33,35 +33,37 @@ export default function SignInForm() {
     },
   });
 
+  // Look for code like this in your sign-in page component
+  // and modify it to not redirect based on verification status
+  
+  // Example of what might be causing the issue:
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     setIsSubmitting(true);
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: data.identifier,
-      password: data.password,
-    });
-
-    if (result?.error) {
-      if (result.error === "CredentialsSignin") {
-        toast.error("Incorrect username or password");
-      } else {
-        if (
-          result.error == "Error: Please verify your account before logging in"
-        ) {
-          toast.error(
-            `You verify code is expired, fill this form to get a new verify code`
-          );
-          router.push("/send-verify-code");
-        } else {
-          toast.error(result.error);
-        }
+    try {
+      console.log("Signing in with:", { identifier: data.identifier });
+      
+      const result = await signIn("credentials", {
+        identifier: data.identifier, // Pass as identifier instead of username
+        password: data.password,
+        redirect: false,
+      });
+  
+      console.log("Sign-in result:", result);
+  
+      if (result?.error) {
+        toast.error(result.error);
+        setIsSubmitting(false);
+        return;
       }
-    }
-
-    setIsSubmitting(false);
-
-    if (result?.url) {
-      router.replace("/dashboard");
+  
+      if (result?.ok) {
+        toast.success("Signed in successfully!");
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Sign-in error:", error);
+      toast.error("An error occurred. Please try again.");
+      setIsSubmitting(false);
     }
   };
 
