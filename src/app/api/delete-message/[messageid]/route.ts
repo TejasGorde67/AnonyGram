@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import dbConnect from "@/lib/dbConnect";
 import { User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
+import { isValidObjectId } from "mongoose";
 
 export async function DELETE(
   request: Request,
@@ -17,6 +18,13 @@ export async function DELETE(
     return Response.json(
       { success: false, message: "Not authenticated" },
       { status: 401 }
+    );
+  }
+
+  if (!isValidObjectId(messageId)) {
+    return Response.json(
+      { success: false, message: "Invalid ID" },
+      { status: 400 }
     );
   }
 

@@ -7,8 +7,6 @@ declare module "next-auth" {
     username: string;
     email: string;
     isVerified: boolean;
-    isAcceptingMessages?: boolean;
-    _id?: string | any;
   }
 
   interface Session extends DefaultSession {
