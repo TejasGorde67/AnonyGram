@@ -3,6 +3,15 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import bcrypt from "bcryptjs";
+import { Types } from "mongoose";
+
+// Add proper type declaration for session
+interface SessionUser {
+  _id: string;
+  username: string;
+  isVerified: boolean;
+  email: string;
+}
 
 const handler = NextAuth({
   providers: [
@@ -23,8 +32,8 @@ const handler = NextAuth({
         const user = await UserModel.findOne({
           $or: [
             { username: credentials.identifier },
-            { email: credentials.identifier }
-          ]
+            { email: credentials.identifier },
+          ],
         });
 
         if (!user) {
@@ -40,12 +49,15 @@ const handler = NextAuth({
           throw new Error("Invalid username/email or password");
         }
 
+        // Use type assertion to fix the TypeScript error
+        const userDoc = user.toObject();
+
         // Allow login regardless of verification status
         return {
-          id: user._id.toString(),
-          username: user.username,
-          email: user.email,
-          isVerified: user.isVerified,
+          id: userDoc._id.toString(),
+          username: userDoc.username,
+          email: userDoc.email,
+          isVerified: userDoc.isVerified,
         };
       },
     }),
@@ -60,10 +72,11 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user._id = token._id;
         session.user.username = token.username;
         session.user.isVerified = token.isVerified;
+        session.user.email = token.email;
       }
       return session;
     },
