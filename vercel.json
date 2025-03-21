@@ -1,6 +1,5 @@
 {
   "buildCommand": "next build --no-lint",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": "nextjs",
-  "outputDirectory": ".next"
+  "framework": "nextjs"
 }

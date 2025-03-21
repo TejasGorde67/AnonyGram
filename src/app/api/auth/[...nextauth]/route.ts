@@ -22,7 +22,8 @@ const handler = NextAuth({
         identifier: { label: "Username or Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials): Promise<User | null> {
+      // Update your authorize function to match NextAuth's expected types
+      async authorize(credentials, req) {
         if (!credentials?.identifier || !credentials?.password) {
           throw new Error("Please enter your username/email and password");
         }
